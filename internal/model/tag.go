@@ -64,7 +64,7 @@ func (t Tag) Create(db *gorm.DB) error {
 
 func (t Tag) Update(db *gorm.DB, values interface{}) error {
 	//更新
-	return db.Model(&t).Where("id = ? AND is_del= ?", t.ID, t.IsDel).Updates(values).Error
+	return db.Model(&t).Where("id = ? AND is_del= ?", t.ID, 0).Updates(values).Error
 }
 
 func (t Tag) Delete(db *gorm.DB) error {
