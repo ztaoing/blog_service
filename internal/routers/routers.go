@@ -7,7 +7,8 @@ package routers
 
 import (
 	_ "blog_service/docs"
-	v1 "blog_service/internal/routers/v1"
+	"blog_service/internal/middleware"
+	v1 "blog_service/internal/routers/api/v1"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginswagger "github.com/swaggo/gin-swagger"
@@ -17,6 +18,7 @@ func NewRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.Use(middleware.TransLations())
 	//_ "blog_service/docs"需要初始化doc
 	//注册swagger路由
 	r.GET("/swagger/*any", ginswagger.WrapHandler(swaggerFiles.Handler))
