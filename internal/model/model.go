@@ -43,6 +43,16 @@ func NewDBEngine(database *setting.DatabaseSettings) (*gorm.DB, error) {
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(database.MaxIdleConns)
 	db.DB().SetMaxOpenConns(database.MaxOpenConns)
+
+	//注册回调行为
+	//这三个回调行为用于处理公共字段
+	db.SingularTable(true)
+	db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
+	db.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
+	db.Callback().Delete().Replace("gorm:delete", deleteCallback)
+
+	db.DB().SetMaxIdleConns(database.MaxIdleConns)
+	db.DB().SetMaxOpenConns(database.MaxOpenConns)
 	return db, nil
 }
 
@@ -100,8 +110,8 @@ func deleteCallback(scope *gorm.Scope) {
 		} else {
 			scope.Raw(fmt.Sprintf(
 				"DELETE FROM %v%v%v",
-				scope.QuotedTableName(),
-				addExtraSpaceIfExist(scope.CombinedConditionSql()),
+				scope.QuotedTableName(),                            //获取当前引用的表明
+				addExtraSpaceIfExist(scope.CombinedConditionSql()), //CombinedConditionSql完成SQL语句的组装
 				addExtraSpaceIfExist(extraOption),
 			)).Exec()
 		}
