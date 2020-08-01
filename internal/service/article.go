@@ -5,6 +5,11 @@
 
 package service
 
+import (
+	"blog_service/internal/model"
+	"blog_service/pkg/app"
+)
+
 type ArticleRequest struct {
 	ID    uint32 `form:"id" binding:"required,gte=1"`
 	State uint8  `form:"state,default=1" binding:"oneof=0 1"`
@@ -40,4 +45,35 @@ type UpdateArticleRequest struct {
 
 type DeleteArticleRequest struct {
 	ID uint32 `form:"id" binding:"required,gte=1"`
+}
+
+//以文章信息为主题，以标签内容为附属
+type Article struct {
+	ID             uint32     `json:"id"`
+	Title          string     `json:"title"`
+	Desc           string     `json:"desc"`
+	Content        string     `json:"content"`
+	ConverImageUrl string     `json:"conver_image_url"`
+	State          uint8      `json:"state"`
+	Tag            *model.Tag `json:"tag"`
+}
+
+func (svs *Service) GetArticle(param *ArticleRequest) (*Article, error) {
+
+}
+
+func (svs *Service) GetArticleList(param *ArticleListRequest, pager *app.Pager) ([]*Article, int, error) {
+
+}
+
+func (svs *Service) CreateArticle(param *CreateArticleRequest) error {
+
+}
+
+func (svs *Service) UpdateArticle(param *UpdateArticleRequest) error {
+
+}
+
+func (svs *Service) DeleteArticle(param *DeleteArticleRequest) error {
+
 }

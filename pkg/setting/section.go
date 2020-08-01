@@ -19,11 +19,15 @@ type ServerSettings struct {
 }
 
 type AppSettings struct {
-	DefaultPageSize int
-	MaxPageSize     int
-	LogSavePath     string
-	LogFileName     string
-	LogFileExt      string
+	DefaultPageSize      int
+	MaxPageSize          int
+	LogSavePath          string
+	LogFileName          string
+	LogFileExt           string
+	UploadSavePath       string
+	UploadServerUrl      string
+	UploadImageMaxSize   int
+	UploadImageAllowExts []string
 }
 
 type DatabaseSettings struct {
@@ -37,6 +41,12 @@ type DatabaseSettings struct {
 	ParseTime    bool
 	MaxIdleConns int
 	MaxOpenConns int
+}
+
+type JwtSettings struct {
+	Secret string
+	Issuer string
+	Expire time.Duration
 }
 
 //读取区段额配置

@@ -7,11 +7,14 @@ package routers
 
 import (
 	_ "blog_service/docs"
+	"blog_service/global"
 	"blog_service/internal/middleware"
+	"blog_service/internal/routers/api"
 	v1 "blog_service/internal/routers/api/v1"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginswagger "github.com/swaggo/gin-swagger"
+	"net/http"
 )
 
 func NewRouter() *gin.Engine {
@@ -25,7 +28,19 @@ func NewRouter() *gin.Engine {
 
 	article := v1.NewArticle()
 	tag := v1.NewTag()
+
+	//文件上传
+	upload := api.NewUpload()
+	r.POST("/upload/file", upload.UploadFile)
+	//增加对静态资源的访问
+	r.StaticFS("/static", http.Dir(global.AppSetting.UploadSavePath))
+
+	//auth
+	r.GET("/auth", api.GetAuth)
+
 	apiv1 := r.Group("/api/v1")
+	//令牌校验
+	apiv1.Use(middleware.Jwt()) //middleware.JWT()
 	{
 		apiv1.POST("/tags", tag.Create)       //增加标签
 		apiv1.DELETE("/tags/:id", tag.Delete) //删除指定标签
@@ -39,5 +54,6 @@ func NewRouter() *gin.Engine {
 		apiv1.GET("/articles/:id", article.Get)            //获取指定文章
 		apiv1.GET("/articles", article.Get)                //获取文章列表
 	}
+
 	return r
 }

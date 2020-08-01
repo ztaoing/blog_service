@@ -16,12 +16,12 @@ import (
 
 // 注意需要引入 github.com/jinzhu/gorm/dialects/mysql
 type Model struct {
-	ID         uint32 `json:"id" gorm:"primary_key"`
-	CreatedBy  string `json:"created_by"`
-	ModifiedBy string `json:"modified_by"`
-	CreatedOn  string `json:"created_on"`
-	DeletedOn  uint32 `json:"deleted_on"`
-	IsDel      uint8  `json:"is_del"`
+	ID         uint32 `json:"id" gorm:"primary_key",omitempty`
+	CreatedBy  string `json:"created_by",omitempty`
+	ModifiedBy string `json:"modified_by",omitempty`
+	CreatedOn  string `json:"created_on",omitempty`
+	DeletedOn  uint32 `json:"deleted_on",omitempty`
+	IsDel      uint8  `json:"is_del",omitempty`
 }
 
 func NewDBEngine(database *setting.DatabaseSettings) (*gorm.DB, error) {
