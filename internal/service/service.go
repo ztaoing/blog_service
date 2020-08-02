@@ -9,6 +9,7 @@ import (
 	"blog_service/global"
 	"blog_service/internal/dao"
 	"context"
+	otgorm "github.com/eddycjy/opentracing-gorm"
 )
 
 type Service struct {
@@ -17,8 +18,7 @@ type Service struct {
 }
 
 func New(ctx context.Context) *Service {
-	return &Service{
-		ctx: ctx,
-		dao: dao.New(global.DBEngine),
-	}
+	svs := Service{ctx: ctx}
+	//新增数据库连接实例的上下文信息注册
+	svs.dao = dao.New(otgorm.WithContext(svs.ctx, global.DBEngine))
 }

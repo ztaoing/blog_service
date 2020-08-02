@@ -11,12 +11,24 @@ import (
 	"blog_service/internal/routers"
 	"blog_service/pkg/logger"
 	"blog_service/pkg/setting"
-	"errors"
+	"blog_service/pkg/tracer"
+	"context"
+	"flag"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
 	"time"
+)
+
+var (
+	port    string
+	runMode string
+	config  string
 )
 
 //@title 博客系统，这里的注解可以用来区分项目
@@ -32,8 +44,33 @@ func main() {
 		WriteTimeout:   global.ServerSetting.WriteTimeout,
 		MaxHeaderBytes: 1 << 20,
 	}
-	global.Logger.Infof("%s", "hahah")
-	s.ListenAndServe()
+
+	//优雅
+	go func() {
+		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("s.ListenAndServe err:%v", err)
+		}
+	}()
+
+	//等待中断信号
+	quit := make(chan os.Signal)
+
+	//接收优雅停止信号信号
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	<-quit
+	log.Println("Shuting down server...")
+
+	//最大时间控制，通知该服务它有5s的时间来处理原有的请求
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	//超时停止
+	if err := s.Shutdown(ctx); err != nil {
+		log.Fatal("server forced to shutdown:", err)
+	}
+	//已停止
+	log.Println("server exiting.")
+
 }
 
 //全局变量初始化-》init-》main
@@ -52,40 +89,58 @@ func init() {
 	if err != nil {
 		log.Fatalf("init.setupDBEngine err:%v", err)
 	}
+
+	err = setupTracer()
+	if err != nil {
+		log.Fatalf("init.setupTracer err:%v", err)
+	}
+
+	err = setupFlag()
+	if err != nil {
+		log.Fatalf("init.setupFlag err:%v", err)
+	}
 }
 
 func setupSetting() error {
-	var s *setting.ServerSettings
-	if s == nil {
-		return errors.New("here")
-	}
-	settings, err := setting.NewSetting()
+	s, err := setting.NewSetting(strings.Split(config, ",")...)
 	if err != nil {
 		return err
 	}
 
-	err = settings.ReadSection("Server", &global.ServerSetting)
+	err = s.ReadSection("Server", &global.ServerSetting)
 	if err != nil {
 		return err
 	}
 
-	err = settings.ReadSection("App", &global.AppSetting)
+	err = s.ReadSection("App", &global.AppSetting)
 	if err != nil {
 		return err
 	}
 
-	err = settings.ReadSection("Database", &global.DatabaseSetting)
+	err = s.ReadSection("Database", &global.DatabaseSetting)
+	if err != nil {
+		return err
+	}
+	err = s.ReadSection("Email", &global.EmailSetting)
 	if err != nil {
 		return err
 	}
 
-	err = settings.ReadSection("Jwt", &global.JwtSetting)
+	err = s.ReadSection("Jwt", &global.JwtSetting)
 	if err != nil {
 		return err
 	}
 	global.JwtSetting.Expire *= time.Second
 	global.ServerSetting.ReadTimeout *= time.Second
 	global.ServerSetting.WriteTimeout *= time.Second
+	global.AppSetting.DefaultContextTimeout *= time.Second
+
+	if port != "" {
+		global.ServerSetting.HttpPort = port
+	}
+	if runMode != "" {
+		global.ServerSetting.RunMode = runMode
+	}
 	return nil
 }
 
@@ -107,5 +162,25 @@ func setupLogger() error {
 		MaxAge:    10,  //日志文件的最大生存周期
 		LocalTime: true,
 	}, "", log.LstdFlags).WithCaller(2)
+	return nil
+}
+
+func setupTracer() error {
+	jaegerTracer, _, err := tracer.NewJaegerTracer("blog-service", "127.0.0.1:6831")
+	if err != nil {
+		return err
+	}
+	//放到全局变量中
+	global.Tracer = jaegerTracer
+	return nil
+}
+
+//通过指定的方式，获取参数及配置文件
+//go run main.go -port=8001 -model=release -config=configs/
+func setupFlag() error {
+	flag.StringVar(&port, "port", "", "启动端口")
+	flag.StringVar(&runMode, "mode", "", "启动模式")
+	flag.StringVar(&config, "config", "configs/", "指定使用的配置文件路径")
+	flag.Parse()
 	return nil
 }

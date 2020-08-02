@@ -124,5 +124,5 @@ func (a Article) Delete(c *gin.Context) {
 		return
 	}
 	response.ToResponse(gin.H{})
-	return
+	retur
 }

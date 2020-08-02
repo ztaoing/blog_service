@@ -16,6 +16,7 @@ App:
     - .jpg
     - .jpeg
     - .png
+  DefaultContextTimeout:60
 Database:
    DBType:mysql
   Username:root
@@ -26,8 +27,17 @@ Database:
   Charset:utf8
   ParseTime:True
   MaxIdleConns:10
-  MaxOpenConns:30
+  MaxOpenConns:300
 JWT:
   Secret:sdfad
   Issuer:blog-service
   Expire:7200
+Email:
+  Host:smpt.qq.com
+  port:465
+  UserName:1216707759@qq.com
+  Password:XXXXX
+  IsSSL:true
+  From:ztaoing@qq.com
+  To:
+    - xxx@qq.com

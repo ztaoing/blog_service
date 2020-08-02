@@ -11,16 +11,38 @@ import (
 	"blog_service/internal/middleware"
 	"blog_service/internal/routers/api"
 	v1 "blog_service/internal/routers/api/v1"
+	"blog_service/pkg/limiter"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginswagger "github.com/swaggo/gin-swagger"
 	"net/http"
+	"time"
 )
+
+var methodLimiters = limiter.NewMethodLimiter().AddBuckets(limiter.LimiterBucketRule{
+	Key:          "/auth",
+	FillInterval: time.Second,
+	Capcity:      10,
+	Quantum:      10,
+})
 
 func NewRouter() *gin.Engine {
 	r := gin.New()
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
+	//根据不同的部署环境对应用进行了设置
+	if global.ServerSetting.RunMode == "debug" {
+		r.Use(gin.Logger())
+		r.Use(gin.Recovery())
+	} else {
+		r.Use(middleware.AccessLog())
+		r.Use(middleware.Recovery())
+	}
+	//链路追踪
+	r.Use(middleware.Tracing())
+	//限流
+	r.Use(middleware.ReteLimiter(methodLimiters))
+	//超时
+	r.Use(middleware.ContextTimeout(global.AppSetting.DefaultContextTimeout))
+	//validator 的TransLations
 	r.Use(middleware.TransLations())
 	//_ "blog_service/docs"需要初始化doc
 	//注册swagger路由

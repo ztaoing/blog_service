@@ -18,4 +18,5 @@ var (
 	DatabaseSetting *setting.DatabaseSettings
 	Logger          *logger.Logger //logger对象
 	JwtSetting      *setting.JwtSettings
+	EmailSetting    *setting.EmailSettings
 )
