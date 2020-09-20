@@ -6,6 +6,7 @@
 package service
 
 import (
+	"blog_service/internal/dao"
 	"blog_service/internal/model"
 	"blog_service/pkg/app"
 )
@@ -58,16 +59,16 @@ type Article struct {
 	Tag            *model.Tag `json:"tag"`
 }
 
-func (svs *Service) GetArticle(param *ArticleRequest) (*Article, error) {
-	article, err := svs.dao.GetArticle(param.ID, param.State)
+func (svc *Service) GetArticle(param *ArticleRequest) (*Article, error) {
+	article, err := svc.dao.GetArticle(param.ID, param.State)
 	if err != nil {
 		return nil, err
 	}
-	articleTag, err := svs.dao.GetArticleTagByAID(article.ID)
+	articleTag, err := svc.dao.GetArticleTagByAID(article.ID)
 	if err != nil {
 		return nil, err
 	}
-	tag, err := svs.dao.GetTag(articleTag.ID, model.STATE_OPEN)
+	tag, err := svc.dao.GetTag(articleTag.ID, model.STATE_OPEN)
 	if err != nil {
 		return nil, err
 	}
@@ -82,18 +83,77 @@ func (svs *Service) GetArticle(param *ArticleRequest) (*Article, error) {
 	}, nil
 }
 
-func (svs *Service) GetArticleList(param *ArticleListRequest, pager *app.Pager) ([]*Article, int, error) {
-
+func (svc *Service) GetArticleList(param *ArticleListRequest, pager *app.Pager) ([]*Article, int, error) {
+	articleCount, err := svc.dao.CountArticleListByTagID(param.TagID, param.State)
+	if err != nil {
+		return nil, 0, err
+	}
+	articles, err := svc.dao.GetArticleListByTagID(param.TagID, param.State, pager.Page, pager.PageSize)
+	if err != nil {
+		return nil, 0, err
+	}
+	var articleList []*Article
+	for _, article := range articles {
+		articleList = append(articleList, &Article{
+			ID:             article.ArticleID,
+			Title:          article.ArticleTitle,
+			Desc:           article.ArticleDesc,
+			Content:        article.Content,
+			ConverImageUrl: article.CoverImageUrl,
+			Tag:            &model.Tag{Model: &model.Model{ID: article.TagID}, Name: article.TagName},
+		})
+	}
+	return articleList, articleCount, nil
 }
 
-func (svs *Service) CreateArticle(param *CreateArticleRequest) error {
-
+func (svc *Service) CreateArticle(param *CreateArticleRequest) error {
+	article, err := svc.dao.CreateArticle(&dao.Article{
+		Title:         param.Title,
+		Desc:          param.Desc,
+		Content:       param.Content,
+		CoverImageUrl: param.CoverImageUrl,
+		State:         param.State,
+		CreateBy:      param.CreatedBy,
+	})
+	if err != nil {
+		return err
+	}
+	err = svc.dao.CreateArticleTag(article.ID, param.TagID, param.CreatedBy)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (svs *Service) UpdateArticle(param *UpdateArticleRequest) error {
-
+func (svc *Service) UpdateArticle(param *UpdateArticleRequest) error {
+	err := svc.dao.UpdateArticle(&dao.Article{
+		ID:            param.ID,
+		Title:         param.Title,
+		Desc:          param.Desc,
+		Content:       param.Content,
+		CoverImageUrl: param.CoverImageUrl,
+		State:         param.State,
+		ModifiedBy:    param.ModifiedBy,
+	})
+	if err != nil {
+		return err
+	}
+	// update tag
+	err = svc.dao.UpdateArticleTag(param.ID, param.TagID, param.ModifiedBy)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (svs *Service) DeleteArticle(param *DeleteArticleRequest) error {
-
+func (svc *Service) DeleteArticle(param *DeleteArticleRequest) error {
+	err := svc.dao.DeleteArticle(param.ID)
+	if err != nil {
+		return err
+	}
+	err = svc.dao.DeleteArticleTag(param.ID)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -13,8 +13,8 @@ type AuthRequest struct {
 	AppSecret string `form:"app_secret" binding:"required"`
 }
 
-func (svs *Service) CheckAuth(param *AuthRequest) error {
-	auth, err := svs.dao.GetAuth(param.AppKey, param.AppSecret)
+func (svc *Service) CheckAuth(param *AuthRequest) error {
+	auth, err := svc.dao.GetAuth(param.AppKey, param.AppSecret)
 	if err != nil {
 		return err
 	}

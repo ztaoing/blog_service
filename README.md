@@ -12,3 +12,5 @@
 6. storage 项目生成的临时文件
 7. scripts 各类构建、安装、分析等操作脚本
 8. third_party 第三方资源工具 swagger-UI
+
+ingress nignx -> blog pod ->mysql pod

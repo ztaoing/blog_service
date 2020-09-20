@@ -1,43 +1,43 @@
 Server:
-  RunMode:debug
-  HttpPort:8000
-  ReadTimeout:60
-  WriteTimeout:60
+  RunMode: debug
+  HttpPort: 8000
+  ReadTimeout: 60
+  WriteTimeout: 60
 App:
-  DefaultPageSize:10
-  MaxPageSize:100
-  LogSavePath:storage/logs
-  LogFileName:app
-  LogFileExt:.log
+  DefaultPageSize: 10
+  MaxPageSize: 100
+  LogSavePath: storage/logs
+  LogFileName: app
+  LogFileExt: .log
   UploadSavePath: storage/uploads
-  UploadServerUrl: http://127.0.0.1:8000/static  #上传文件后用于展示的文件服务地址
-  UploadImageMaxSize:5 #MB
+  UploadServerUrl: http://127.0.0.1:8000/static
+  UploadImageMaxSize: 5 #MB
   UploadImageAllowExts:
     - .jpg
     - .jpeg
     - .png
-  DefaultContextTimeout:60
+  DefaultContextTimeout: 60
 Database:
-   DBType:mysql
-  Username:root
-  Password:123456
-  Host:127.0.0.1:3306
-  DBname:blog_service
-  TablePrefix:blog_
-  Charset:utf8
-  ParseTime:True
-  MaxIdleConns:10
-  MaxOpenConns:300
+  DBType: mysql
+  Username: root
+  Password: 123456
+  Host: 127.0.0.1:3306
+  DBname: blog_service
+  TablePrefix: blog_
+  Charset: utf8
+  ParseTime: True
+  MaxIdleConns: 10
+  MaxOpenConns: 300
 JWT:
-  Secret:sdfad
-  Issuer:blog-service
-  Expire:7200
+  Secret: sdfad
+  Issuer: blog-service
+  Expire: 7200
 Email:
-  Host:smpt.qq.com
-  port:465
-  UserName:1216707759@qq.com
-  Password:XXXXX
-  IsSSL:true
-  From:ztaoing@qq.com
+  Host: smpt.qq.com
+  port: 465
+  UserName: 1216707759@qq.com
+  Password: XXXXX
+  IsSSL: true
+  From: ztaoing@qq.com
   To:
     - xxx@qq.com

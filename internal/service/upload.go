@@ -20,7 +20,7 @@ type FileInfo struct {
 }
 
 //上传文件
-func (svs *Service) UploadFile(fileType upload.FileType, file multipart.File, fileHeader *multipart.FileHeader) (*FileInfo, error) {
+func (svc *Service) UploadFile(fileType upload.FileType, file multipart.File, fileHeader *multipart.FileHeader) (*FileInfo, error) {
 	fileName := upload.GetFileName(fileHeader.Filename)
 	uploadSavePath := upload.GetSavePath()
 	dst := uploadSavePath + "/" + fileName

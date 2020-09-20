@@ -17,8 +17,9 @@ type Service struct {
 	dao *dao.Dao
 }
 
-func New(ctx context.Context) *Service {
-	svs := Service{ctx: ctx}
+func New(ctx context.Context) Service {
+	svc := Service{ctx: ctx}
 	//新增数据库连接实例的上下文信息注册
-	svs.dao = dao.New(otgorm.WithContext(svs.ctx, global.DBEngine))
+	svc.dao = dao.New(otgorm.WithContext(svc.ctx, global.DBEngine))
+	return svc
 }

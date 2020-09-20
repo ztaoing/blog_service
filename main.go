@@ -75,7 +75,11 @@ func main() {
 
 //全局变量初始化-》init-》main
 func init() {
-	err := setupSetting()
+	err := setupFlag()
+	if err != nil {
+		log.Fatalf("init.setupFlag err:%v", err)
+	}
+	err = setupSetting()
 	if err != nil {
 		log.Fatalf("init.setupSetting err: %v", err)
 	}
@@ -95,10 +99,6 @@ func init() {
 		log.Fatalf("init.setupTracer err:%v", err)
 	}
 
-	err = setupFlag()
-	if err != nil {
-		log.Fatalf("init.setupFlag err:%v", err)
-	}
 }
 
 func setupSetting() error {
