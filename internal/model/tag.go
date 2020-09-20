@@ -71,3 +71,12 @@ func (t Tag) Delete(db *gorm.DB) error {
 	//删除
 	return db.Where("id= ? AND is_del= ?", t.ID, 0).Delete(&t).Error
 }
+
+func (t Tag) Get(db *gorm.DB) (Tag, error) {
+	var tag Tag
+	err := db.Where("id = ? AND is_del = ? AND state = ? ", t.ID, 0, t.State).First(&tag).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return tag, err
+	}
+	return tag, nil
+}

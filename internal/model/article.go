@@ -44,7 +44,7 @@ func (a *Article) Update(db *gorm.DB, values interface{}) error {
 
 func (a *Article) Get(db *gorm.DB) (Article, error) {
 	var article Article
-	db = db.Model(&a).Where("id = ? AND state = ? AND is_del= ? ", a.ID, a.state, a.IsDel)
+	db = db.Model(&a).Where("id = ? AND state = ? AND is_del= ? ", a.ID, a.State, a.IsDel)
 	//First查询单条记录
 	err := db.First(&article).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -80,7 +80,7 @@ func (a *Article) ListByTagID(db *gorm.DB, tagID uint32, pageOffset, pageSize in
 	}
 	rows, err := db.Select(fields).Table(ArticleTag{}.TableName()+" AS at ").Joins("LEFT JOIN `"+Tag{}.TableName()+"` AS t"+
 		" ON at.tag_id = t.id").Joins(" LEFT JOIN `"+Article{}.TableName()+"` AS ar ON at.article_id = ar.id").Where(
-		"at.`tag_id`= ? AND ar.state = ? AND ar.is_del = ? ", tagID, a.state, 0).Rows()
+		"at.`tag_id`= ? AND ar.state = ? AND ar.is_del = ? ", tagID, a.State, 0).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (a *Article) CountByTagID(db *gorm.DB, tagID uint32) (int, error) {
 	err := db.Table(ArticleTag{}.TableName()+" AS at").
 		Joins("LEFT JOIN `"+Tag{}.TableName()+"` AS t ON at.tag_id = t.id ").
 		Joins("LEFT JOIN `"+Article{}.TableName()+"` AS ar ON at.article_id = ar.id").
-		Where("at.`tag_id` = ? AND ar.state = ? AND ar.is_del = ?", tagID, a.state, 0).
+		Where("at.`tag_id` = ? AND ar.state = ? AND ar.is_del = ?", tagID, a.State, 0).
 		Count(&count).Error
 	if err != nil {
 		return 0, err

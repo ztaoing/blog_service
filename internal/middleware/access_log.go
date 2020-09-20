@@ -41,7 +41,7 @@ func AccessLog() gin.HandlerFunc {
 			"reponse": bodyWriter.body.String(),
 		}
 		//记录日志
-		global.Logger.WithFields(fields).Infof("access log:method:%s ,status_code:%d,begin_time:%d,end_time:%d",
+		global.Logger.WithFields(fields).Infof(c, "access log:method:%s ,status_code:%d,begin_time:%d,end_time:%d",
 			c.Request.Method,
 			bodyWriter.Status(),
 			beginTime,

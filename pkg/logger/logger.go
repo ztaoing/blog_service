@@ -58,7 +58,7 @@ type Logger struct {
 	callers   []string        //设置当前某一层调用栈的信息（程序计数器、文件信息、行号）
 }
 
-func NewLlogger(w io.Writer, prefix string, flag int) *Logger {
+func NewLogger(w io.Writer, prefix string, flag int) *Logger {
 	l := log.New(w, prefix, flag)
 	return &Logger{newLogger: l}
 }

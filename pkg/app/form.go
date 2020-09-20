@@ -20,7 +20,7 @@ type ValidError struct {
 type ValidErrors []*ValidError
 
 func (v *ValidError) Error() string {
-
+	return v.Message
 }
 
 func (v ValidErrors) Errors() []string {

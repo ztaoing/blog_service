@@ -31,7 +31,7 @@ func Recovery() gin.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				//设置当前整个栈的调用信息
-				global.Logger.WithCallerFrames().Errorf("panic recover err:%v", err)
+				global.Logger.WithCallerFrames().Errorf(ctx, "panic recover err:%v", err)
 				//发送邮件提醒
 				//邮件模可以定制
 				err = Mailer.SendMail(global.EmailSetting.To,
@@ -39,7 +39,7 @@ func Recovery() gin.HandlerFunc {
 					fmt.Sprintf("错误信息：%v", err),
 				)
 				if err != nil {
-					global.Logger.Errorf(" Mailer.SendMail err:%v", err)
+					global.Logger.Errorf(ctx, " Mailer.SendMail err:%v", err)
 				}
 				app.NewResponse(ctx).ToErrorResponse(errcode.ServerError)
 				ctx.Abort()

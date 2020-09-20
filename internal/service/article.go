@@ -59,7 +59,27 @@ type Article struct {
 }
 
 func (svs *Service) GetArticle(param *ArticleRequest) (*Article, error) {
-
+	article, err := svs.dao.GetArticle(param.ID, param.State)
+	if err != nil {
+		return nil, err
+	}
+	articleTag, err := svs.dao.GetArticleTagByAID(article.ID)
+	if err != nil {
+		return nil, err
+	}
+	tag, err := svs.dao.GetTag(articleTag.ID, model.STATE_OPEN)
+	if err != nil {
+		return nil, err
+	}
+	return &Article{
+		ID:             article.ID,
+		Title:          article.Title,
+		Desc:           article.Desc,
+		Content:        article.Content,
+		ConverImageUrl: article.CoverImageUrl,
+		State:          article.State,
+		Tag:            &tag,
+	}, nil
 }
 
 func (svs *Service) GetArticleList(param *ArticleListRequest, pager *app.Pager) ([]*Article, int, error) {

@@ -15,6 +15,11 @@ import (
 	"time"
 )
 
+const (
+	STATE_OPEN  = 1
+	STATE_CLOSE = 0
+)
+
 // 注意需要引入 github.com/jinzhu/gorm/dialects/mysql
 type Model struct {
 	ID         uint32 `json:"id" gorm:"primary_key",omitempty`

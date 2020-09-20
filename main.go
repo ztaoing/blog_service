@@ -156,7 +156,7 @@ func setupDBEngine() error {
 }
 
 func setupLogger() error {
-	global.Logger = logger.NewLlogger(&lumberjack.Logger{
+	global.Logger = logger.NewLogger(&lumberjack.Logger{
 		Filename:  global.AppSetting.LogSavePath + "/" + global.AppSetting.LogFileName + global.AppSetting.LogFileExt,
 		MaxSize:   600, //允许最大的占用空间为600MB
 		MaxAge:    10,  //日志文件的最大生存周期
