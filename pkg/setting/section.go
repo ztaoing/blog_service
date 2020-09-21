@@ -34,7 +34,7 @@ type AppSettings struct {
 type DatabaseSettings struct {
 	DBtype       string
 	UserName     string
-	Passsword    string
+	Password     string
 	Host         string
 	DBName       string
 	TablePrefix  string
