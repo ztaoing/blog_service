@@ -31,7 +31,7 @@ var (
 	config  string
 )
 
-//@title 博客系统，这里的注解可以用来区分项目
+//@title 博客系统
 //@version 1.0
 //@descrption blog with log、swagger、viper、error/success response
 func main() {

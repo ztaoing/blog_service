@@ -51,7 +51,7 @@ definitions:
 info:
   contact: {}
   license: {}
-  title: 博客系统，这里的注解可以用来区分项目
+  title: 博客系统
   version: "1.0"
 paths:
   /api/v1/tags:

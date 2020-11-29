@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "博客系统，这里的注解可以用来区分项目",
+        "title": "博客系统",
         "contact": {},
         "license": {},
         "version": "1.0"

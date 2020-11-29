@@ -18,13 +18,13 @@ type Tag struct {
 	State uint8  `json:"state"`
 }
 
-func (t Tag) TableName() string {
-	return "blog_tag"
-}
-
 type TagSwagger struct {
 	List  []*Tag
 	Pager *app.Pager
+}
+
+func (t Tag) TableName() string {
+	return "blog_tag"
 }
 
 func (t Tag) Count(db *gorm.DB) (int, error) {
