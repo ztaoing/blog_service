@@ -33,7 +33,7 @@ var (
 
 //@title 博客系统，这里的注解可以用来区分项目
 //@version 1.0
-//@descrption blog with log、swagger、viper、error/success response、dalidator
+//@descrption blog with log、swagger、viper、error/success response
 func main() {
 	gin.SetMode(global.ServerSetting.RunMode)
 	router := routers.NewRouter()
@@ -75,10 +75,12 @@ func main() {
 
 //全局变量初始化-》init-》main
 func init() {
+	//通过指定的方式，获取参数及配置文件
 	err := setupFlag()
 	if err != nil {
 		log.Fatalf("init.setupFlag err:%v", err)
 	}
+	//初始化配置
 	err = setupSetting()
 	if err != nil {
 		log.Fatalf("init.setupSetting err: %v", err)
@@ -101,6 +103,14 @@ func init() {
 
 }
 
+//go run main.go -port=8001 -model=release -config=configs/
+func setupFlag() error {
+	flag.StringVar(&port, "port", "", "启动端口")
+	flag.StringVar(&runMode, "mode", "", "启动模式")
+	flag.StringVar(&config, "config", "configs/", "指定使用的配置文件路径")
+	flag.Parse()
+	return nil
+}
 func setupSetting() error {
 	s, err := setting.NewSetting(strings.Split(config, ",")...)
 	if err != nil {
@@ -172,15 +182,5 @@ func setupTracer() error {
 	}
 	//放到全局变量中
 	global.Tracer = jaegerTracer
-	return nil
-}
-
-//通过指定的方式，获取参数及配置文件
-//go run main.go -port=8001 -model=release -config=configs/
-func setupFlag() error {
-	flag.StringVar(&port, "port", "", "启动端口")
-	flag.StringVar(&runMode, "mode", "", "启动模式")
-	flag.StringVar(&config, "config", "configs/", "指定使用的配置文件路径")
-	flag.Parse()
 	return nil
 }
